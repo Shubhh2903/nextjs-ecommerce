@@ -20,7 +20,8 @@ const SignUpForm = () => {
 
   const handleSubmit = async () => {
     const data = await signUp(formData);
-    console.log("data", data);
+    localStorage.setItem("role", data.user.role);
+
     setCookie(null, "token", data.token, {
       maxAge: 30 * 24 * 60 * 60,
       path: "/",

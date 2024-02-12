@@ -30,6 +30,7 @@ export default async function handler(req, res) {
         user: {
           name: user.name,
           email: user.email,
+          role: "user",
         },
       });
     } catch (error) {
