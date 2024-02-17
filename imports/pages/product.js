@@ -52,9 +52,7 @@ function ProductForm() {
     fetchProducts();
   }, []);
 
-  const handleImageChange = (e) => {
-    setFormData({ ...formData, productImage: e.target.files[0] });
-  };
+
 
   const handleLogout = () => {
     destroyCookie({}, "token", { path: "/" });
@@ -71,62 +69,6 @@ function ProductForm() {
           </button>
         </div>
       </BTnWrap>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="productName" className="form-label">
-            Product Name
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            name="productName"
-            value={formData.productName}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="quantity" className="form-label">
-            Quantity
-          </label>
-          <input
-            type="number"
-            className="form-control"
-            name="quantity"
-            value={formData.quantity}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="description" className="form-label">
-            Description
-          </label>
-          <textarea
-            className="form-control"
-            name="description"
-            rows="3"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          ></textarea>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="productImage" className="form-label">
-            Product Image
-          </label>
-          <input
-            type="file"
-            className="form-control"
-            name="productImage"
-            onChange={handleImageChange}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">
-          Place Order
-        </button>
-      </form>
       <div className="mt-5">
         <h2>Product List</h2>
         <table className="table">

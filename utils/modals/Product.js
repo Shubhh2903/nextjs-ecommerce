@@ -8,7 +8,6 @@ const productSchema = new mongoose.Schema(
     },
     quantity: {
       type: Number,
-      required: [true, "Please add a quantity"],
     },
     description: {
       type: String,

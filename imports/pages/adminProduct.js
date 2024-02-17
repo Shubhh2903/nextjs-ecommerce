@@ -1,5 +1,9 @@
 // /admin/product.js
-import { getProducts, updateProductStatus } from "@/imports/api/api";
+import {
+  addProduct,
+  getProducts,
+  updateProductStatus,
+} from "@/imports/api/api";
 import React, { useState, useEffect } from "react";
 import nookies, { destroyCookie } from "nookies";
 import { useRouter } from "next/router";
@@ -9,7 +13,38 @@ const AdminProduct = () => {
   const [products, setProducts] = useState([]);
   const { token } = nookies.get({});
   const router = useRouter();
+  const [formData, setFormData] = useState({
+    productName: "",
+    description: "",
+    productImage: null,
+  });
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.productName);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("status", "pending");
+    if (formData.productImage) {
+      formDataToSend.append("productImage", formData.productImage);
+    }
+
+    try {
+      const response = await addProduct(formDataToSend, token);
+      fetchProducts();
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
+  };
+  const handleImageChange = (e) => {
+    setFormData({ ...formData, productImage: e.target.files[0] });
+  };
   useEffect(() => {
     const userRole = localStorage.getItem("role");
 
@@ -56,12 +91,54 @@ const AdminProduct = () => {
           </button>
         </div>
       </BTnWrap>
+      <Form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label htmlFor="productName" className="form-label">
+            Product Name
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            name="productName"
+            value={formData.productName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="description" className="form-label">
+            Description
+          </label>
+          <textarea
+            className="form-control"
+            name="description"
+            rows="3"
+            value={formData.description}
+            onChange={handleChange}
+            required
+          ></textarea>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="productImage" className="form-label">
+            Product Image
+          </label>
+          <input
+            type="file"
+            className="form-control"
+            name="productImage"
+            onChange={handleImageChange}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Add Product
+        </button>
+      </Form>
       <h1>Product List</h1>
       <table className="table">
         <thead>
           <tr>
             <th>Name</th>
-            <th>Quantity</th>
             <th>Description</th>
             <th>Status</th>
             <th>Image</th>
@@ -74,7 +151,6 @@ const AdminProduct = () => {
               {products.map((product) => (
                 <tr key={product._id}>
                   <td>{product.name}</td>
-                  <td>{product.quantity}</td>
                   <td>{product.description}</td>
                   <td>{product.status}</td>
                   <td>
@@ -110,6 +186,10 @@ const AdminProduct = () => {
 };
 
 export default AdminProduct;
+
+const Form = styled.form`
+  margin-bottom: 15px;
+`;
 
 const BTnWrap = styled.div`
   display: flex;
