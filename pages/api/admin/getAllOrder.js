@@ -1,14 +1,20 @@
 import { createRouter } from "next-connect";
 import dbConnect from "@/utils/dbConnect";
 import Order from "@/utils/modals/Order";
-
+import Product from "@/utils/modals/Product";
 const router = createRouter();
 
 router.get(async (req, res) => {
   await dbConnect();
 
   try {
-    const orders = await Order.find({});
+    const orders = await Order.find({})
+      .populate("userId", "name email")
+      .populate({
+        path: "products.productId",
+        model: Product,
+        select: "name description price imagePath",
+      });
     const transformedOrders = orders.map((order) => {
       const orderData = order.toObject();
 
