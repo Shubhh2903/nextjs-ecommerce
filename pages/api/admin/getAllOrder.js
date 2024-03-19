@@ -2,6 +2,8 @@ import { createRouter } from "next-connect";
 import dbConnect from "@/utils/dbConnect";
 import Order from "@/utils/modals/Order";
 import Product from "@/utils/modals/Product";
+import User from "@/utils/modals/User";
+
 const router = createRouter();
 
 router.get(async (req, res) => {

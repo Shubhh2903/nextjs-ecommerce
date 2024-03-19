@@ -1,6 +1,7 @@
 import { createRouter } from "next-connect";
 import dbConnect from "@/utils/dbConnect";
 import Order from "@/utils/modals/Order";
+import User from "@/utils/modals/User";
 
 const router = createRouter();
 

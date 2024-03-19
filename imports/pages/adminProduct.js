@@ -1,6 +1,9 @@
 // /admin/product.js
 import {
+  DeleteProduct,
   addProduct,
+  getAllOrdersAPI,
+  getOrdersAPI,
   getProducts,
   updateProductStatus,
 } from "@/imports/api/api";
@@ -8,11 +11,13 @@ import React, { useState, useEffect } from "react";
 import nookies, { destroyCookie } from "nookies";
 import { useRouter } from "next/router";
 import styled from "styled-components";
+import AllOrderAdmin from "../components/AllOrderAdmin";
 
 const AdminProduct = () => {
   const [products, setProducts] = useState([]);
   const { token } = nookies.get({});
   const router = useRouter();
+  const [allOrder, setAllOrder] = useState([]);
   const [formData, setFormData] = useState({
     productName: "",
     description: "",
@@ -42,9 +47,11 @@ const AdminProduct = () => {
       console.error("Error adding product:", error);
     }
   };
+
   const handleImageChange = (e) => {
     setFormData({ ...formData, productImage: e.target.files[0] });
   };
+
   useEffect(() => {
     const userRole = localStorage.getItem("role");
 
@@ -55,7 +62,13 @@ const AdminProduct = () => {
   }, []);
 
   useEffect(() => {
+    const GetAllOrder = async () => {
+      const resp = await getAllOrdersAPI();
+      setAllOrder(resp);
+    };
+
     fetchProducts();
+    GetAllOrder();
   }, []);
 
   const fetchProducts = async () => {
@@ -67,19 +80,21 @@ const AdminProduct = () => {
     }
   };
 
-  const handleStatusChange = async (productId, newStatus) => {
-    try {
-      await updateProductStatus(productId, { status: newStatus });
-      fetchProducts();
-    } catch (error) {
-      console.error("Error updating product status:", error);
-    }
-  };
-
   const handleLogout = () => {
     destroyCookie({}, "token", { path: "/" });
     localStorage.removeItem("role");
     router.push("/");
+  };
+
+  const getAllOrder = async () => {
+    const newOrder = await getOrdersAPI(token);
+    setAllOrder(newOrder);
+  };
+
+  const handleDelete = (product) => async () => {
+    const resp = await DeleteProduct(product._id);
+    getAllOrder();
+    fetchProducts();
   };
 
   return (
@@ -140,9 +155,8 @@ const AdminProduct = () => {
           <tr>
             <th>Name</th>
             <th>Description</th>
-            <th>Status</th>
             <th>Image</th>
-            <th>Action</th>
+            <th>action</th>
           </tr>
         </thead>
         <tbody>
@@ -152,7 +166,6 @@ const AdminProduct = () => {
                 <tr key={product._id}>
                   <td>{product.name}</td>
                   <td>{product.description}</td>
-                  <td>{product.status}</td>
                   <td>
                     {product.imagePath && (
                       <img
@@ -163,15 +176,12 @@ const AdminProduct = () => {
                     )}
                   </td>
                   <td>
-                    <select
-                      value={product.status}
-                      onChange={(e) =>
-                        handleStatusChange(product._id, e.target.value)
-                      }
+                    <button
+                      className="btn btn-danger"
+                      onClick={handleDelete(product)}
                     >
-                      <option value="pending">Pending</option>
-                      <option value="approved">Approved</option>
-                    </select>
+                      delete
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -181,6 +191,7 @@ const AdminProduct = () => {
           )}
         </tbody>
       </table>
+      <AllOrderAdmin data={allOrder} />
     </div>
   );
 };
