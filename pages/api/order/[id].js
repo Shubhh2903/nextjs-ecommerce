@@ -1,5 +1,5 @@
 import dbConnect from "@/utils/dbConnect";
-import Product from "@/utils/modals/Product";
+import Order from "@/utils/modals/Order";
 import { createRouter } from "next-connect";
 const router = createRouter();
 
@@ -12,24 +12,24 @@ router.patch(async (req, res) => {
   await dbConnect();
 
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(
+    const updatedOrder = await Order.findByIdAndUpdate(
       id,
       { status: body.status },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
-    if (!updatedProduct) {
-      return res.status(404).json({ message: "Product not found" });
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
     }
 
     res.status(200).json({
-      message: "Product updated successfully",
-      product: updatedProduct,
+      message: "Order updated successfully",
+      product: updatedOrder,
     });
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Failed to update product", error: error.message });
+      .json({ message: "Failed to update order", error: error.message });
   }
 });
 
